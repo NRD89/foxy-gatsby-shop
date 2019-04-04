@@ -37,9 +37,9 @@ module.exports = {
         repositoryName: `upsafetysolutions`,
         accessToken: `${process.env.API_KEY}`,
         linkResolver: ({ node, key, value }) => product => `/${product.uid}`,
-        linkResolver: ({ node, key, value }) => category => `/${category.uid}`,
       },
     },
+    `gatsby-plugin-styled-components`,
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // 'gatsby-plugin-offline',

@@ -4,6 +4,7 @@ import { graphql } from "gatsby"
 import { Link } from "gatsby"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import ProductCatalog from "../components/productCatalog"
 
 const Category = ({
   pageContext: { category },
@@ -19,23 +20,7 @@ const Category = ({
         {totalCount} {totalCount === 1 ? "Product" : "Products"}{" "}
         {totalCount === 1 ? "was" : "were"} tagged with "{category}"
       </h1>
-      {edges.map(product => {
-        let categories = false
-        if (product.node.data.categories[0].category) {
-          categories = product.node.data.categories.map(
-            c => c.category.document[0].data.name
-          )
-        }
-        return (
-          <>
-            <Link to={`/${product.node.uid}`}>
-              <h1>{product.node.data.title.text}</h1>
-              <img src={`${product.node.data.image.url}`} alt="" />
-            </Link>
-            <h4>Price: {product.node.data.price}</h4>
-          </>
-        )
-      })}
+      <ProductCatalog products={edges} />
     </Layout>
   )
 }
@@ -79,7 +64,13 @@ export const pageQuery = graphql`
               text
             }
             image {
-              url
+              localFile {
+                childImageSharp {
+                  fluid(maxWidth: 300, quality: 90) {
+                    ...GatsbyImageSharpFluid_withWebp_tracedSVG
+                  }
+                }
+              }
             }
             name_hmac {
               text
@@ -122,3 +113,23 @@ export const pageQuery = graphql`
     }
   }
 `
+
+{
+  /* {edges.map(product => {
+        let categories = false
+        if (product.node.data.categories[0].category) {
+          categories = product.node.data.categories.map(
+            c => c.category.document[0].data.name
+          )
+        }
+        return (
+          <>
+            <Link to={`/${product.node.uid}`}>
+              <h1>{product.node.data.title.text}</h1>
+              <img src={`${product.node.data.image.url}`} alt="" />
+            </Link>
+            <h4>Price: {product.node.data.price}</h4>
+          </>
+        )
+      })} */
+}
