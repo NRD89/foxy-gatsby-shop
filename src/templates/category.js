@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { graphql } from "gatsby"
-import { Link } from "gatsby"
+import PageTransition from "gatsby-v2-plugin-page-transitions"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import ProductCatalog from "../components/productCatalog"
@@ -15,12 +15,15 @@ const Category = ({
 }) => {
   return (
     <Layout>
-      <SEO title={`Category: ${category}`} pathname={location.pathname} />
-      <h1 style={{ marginTop: "4rem" }}>
-        {totalCount} {totalCount === 1 ? "Product" : "Products"}{" "}
-        {totalCount === 1 ? "was" : "were"} tagged with "{category}"
-      </h1>
-      <ProductCatalog products={edges} />
+      <PageTransition>
+        <SEO title={`${category}`} pathname={location.pathname} />
+        <div style={{ textAlign: `center`, marginTop: `4rem`, marginBottom: `2rem` }}>
+        <h1>
+          {totalCount} {totalCount === 1 ? "Product" : "Products"}{" "} in "{category}"
+        </h1>
+        </div>
+        <ProductCatalog products={edges} />
+      </PageTransition>
     </Layout>
   )
 }
@@ -113,23 +116,3 @@ export const pageQuery = graphql`
     }
   }
 `
-
-{
-  /* {edges.map(product => {
-        let categories = false
-        if (product.node.data.categories[0].category) {
-          categories = product.node.data.categories.map(
-            c => c.category.document[0].data.name
-          )
-        }
-        return (
-          <>
-            <Link to={`/${product.node.uid}`}>
-              <h1>{product.node.data.title.text}</h1>
-              <img src={`${product.node.data.image.url}`} alt="" />
-            </Link>
-            <h4>Price: {product.node.data.price}</h4>
-          </>
-        )
-      })} */
-}

@@ -14,6 +14,9 @@ exports.createPages = async ({ graphql, actions }) => {
 
   const productTemplate = require.resolve('./src/templates/product.js')
   const categoryTemplate = require.resolve('./src/templates/category.js')
+  const postTemplate = require.resolve('./src/templates/post.js')
+  const topicTemplate = require.resolve('./src/templates/topic.js')
+  
 
   const result = await wrapper(
     graphql(`
@@ -37,6 +40,32 @@ exports.createPages = async ({ graphql, actions }) => {
             }
           }
         }
+        allPrismicPost {
+          edges {
+            node {
+              id
+              uid
+              data {
+                date
+                title {
+                  text
+                }
+                content {
+                  html
+                }
+                topics {
+                  topic {
+                    document {
+                      data {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     `)
   )
@@ -44,7 +73,7 @@ exports.createPages = async ({ graphql, actions }) => {
   const categorySet = new Set()
   const productsList = result.data.allPrismicProduct.edges
 
-  // Double check that the post has a category assigned
+  // Double check that the product has a category assigned
   productsList.forEach(edge => {
     if (edge.node.data.categories[0].category) {
       edge.node.data.categories.forEach(cat => {
@@ -71,6 +100,41 @@ exports.createPages = async ({ graphql, actions }) => {
       component: categoryTemplate,
       context: {
         category,
+      },
+    })
+  })
+
+
+  const topicSet = new Set()
+  const postsList = result.data.allPrismicPost.edges
+
+  // Double check that the product has a category assigned
+  postsList.forEach(edge => {
+    if (edge.node.data.topics[0].topic) {
+      edge.node.data.topics.forEach(top => {
+        topicSet.add(top.topic.document[0].data.name)
+      })
+    }
+
+    // The uid you assigned in Prismic is the slug!
+    createPage({
+      path: `/${edge.node.uid}`,
+      component: postTemplate,
+      context: {
+        // Pass the unique ID (uid) through context so the template can filter by it
+        uid: edge.node.uid,
+      },
+    })
+  })
+
+  const topicList = Array.from(topicSet)
+
+  topicList.forEach(topic => {
+    createPage({
+      path: `/${_.kebabCase(topic)}`,
+      component: topicTemplate,
+      context: {
+        topic,
       },
     })
   })
